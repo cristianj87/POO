@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programación Orientada a Objetos</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght=400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Conceptos de POO</h1>
+            <nav>
+                <ul>
+                    <li><a href="#herencia">Herencia</a></li>
+                    <li><a href="#polimorfismo">Polimorfismo</a></li>
+                    <li><a href="#excepciones">Excepciones</a></li>
+                    <li><a href="#flujos-archivos">Flujos y Archivos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="herencia" class="content-section">
+            <h2>Estructura de Datos: Introducción a la Herencia</h2>
+            <p>La <strong>herencia</strong> es uno de los pilares fundamentales de la Programación Orientada a Objetos (POO). Permite crear nuevas clases que reutilizan, extienden y modifican el comportamiento definido en otras clases. La clase cuyos miembros se heredan se llama <strong>clase base</strong> (o superclase), y la clase que hereda esos miembros se llama <strong>clase derivada</strong> (o subclase). Esto establece una relación jerárquica de tipo "es un" (por ejemplo, un Perro "es un" Animal).</p>
+
+            <h3>3.1 Definición: Clase Base, Clase Derivada</h3>
+            <p>La <strong>clase base</strong> (también conocida como superclase o clase padre) es la clase principal que contiene atributos y métodos comunes que pueden ser heredados por otras clases. Actúa como una plantilla general.</p>
+            <p>La <strong>clase derivada</strong> (o subclase o clase hija) es la que hereda los miembros (atributos y métodos) de la clase base. Esta clase puede añadir nuevos miembros o modificar (redefinir) los heredados, especializando así el comportamiento de la clase base.</p>
+            <p>En Java, la herencia se implementa con la palabra clave <code>extends</code>.</p>
+
+            <h4>Ejemplo Práctico en Java:</h4>
+            <p>Imagina que estamos modelando diferentes tipos de empleados en una empresa. Podemos tener una clase base <code>Empleado</code> con propiedades y comportamientos generales.</p>
+            <pre><code class="language-java">// Clase Base (Superclase)
+class Empleado {
+    String nombre;
+    double salario;
+
+    public Empleado(String nombre, double salario) {
+        this.nombre = nombre;
+        this.salario = salario;
+    }
+
+    public void trabajar() {
+        System.out.println(nombre + " está trabajando.");
+    }
+
+    public double getSalario() {
+        return salario;
+    }
+}
+
+// Clase Derivada (Subclase)
+class Gerente extends Empleado {
+    String departamento;
+
+    public Gerente(String nombre, double salario, String departamento) {
+        // Llama al constructor de la clase base (Empleado)
+        super(nombre, salario);
+        this.departamento = departamento;
+    }
+
+    public void administrar() {
+        System.out.println(nombre + " está administrando el departamento de " + departamento + ".");
+    }
+}</code></pre>
+            <p>En este ejemplo, <code>Gerente</code> es una clase derivada que hereda <code>nombre</code> y <code>salario</code> de <code>Empleado</code> y además añade su propio atributo <code>departamento</code> y método <code>administrar()</code>.</p>
+            
+            <h3>3.2 Clasificación: Herencia Simple, Herencia Múltiple</h3>
+            <p>La herencia se puede clasificar principalmente en dos tipos según el número de clases base de las que una clase derivada puede heredar directamente.</p>
+            <ul>
+                <li><strong>Herencia Simple</strong>: La clase derivada hereda de una <strong>única</strong> clase base. Este es el modelo que soporta Java directamente para las clases, lo que ayuda a evitar la complejidad y la ambigüedad (como el "problema del diamante").</li>
+                <li><strong>Herencia Múltiple</strong>: La clase derivada puede heredar de <strong>varias</strong> clases base. Java <strong>no permite la herencia múltiple de clases</strong>. Sin embargo, este concepto se puede implementar de forma conceptual a través de las <strong>interfaces</strong>, permitiendo que una clase implemente múltiples interfaces y herede sus métodos abstractos.</li>
+            </ul>
+
+            <h4>Ejemplo Práctico en Java (Simulando Herencia Múltiple con Interfaces):</h4>
+            <p>Supongamos que queremos crear una clase <code>AvionAnfibio</code> que tiene comportamientos de <code>Avion</code> y de <code>Barco</code>.</p>
+            <pre><code class="language-java">interface Volador {
+    void volar();
+}
+
+interface Navegante {
+    void navegar();
+}
+
+// Esta clase implementa ambas interfaces
+class AvionAnfibio implements Volador, Navegante {
+    public void volar() {
+        System.out.println("El avión anfibio está volando.");
+    }
+
+    public void navegar() {
+        System.out.println("El avión anfibio está navegando en el agua.");
+    }
+}</code></pre>
+
+            <h3>3.3 Reutilización de Miembros Heredados</h3>
+            <p>La principal ventaja de la herencia es la <strong>reutilización de código</strong>. Los atributos y métodos públicos y protegidos de la clase base están disponibles directamente en la clase derivada como si fueran propios. Esto evita la duplicación de código y facilita el mantenimiento.</p>
+
+            <h4>Ejemplo Práctico en Java:</h4>
+            <p>Vamos a crear una instancia de <code>Gerente</code> y usar tanto los métodos heredados de <code>Empleado</code> como los suyos propios.</p>
+            <pre><code class="language-java">public class DemoHerencia {
+    public static void main(String[] args) {
+        Gerente gerenteTI = new Gerente("Ana López", 90000, "Tecnologías de la Información");
+
+        // Usando método heredado de la clase Empleado
+        gerenteTI.trabajar(); // Salida: Ana López está trabajando.
+
+        // Usando método propio de la clase Gerente
+        gerenteTI.administrar(); // Salida: Ana López está administrando el departamento de Tecnologías de la Información.
+
+        // Usando atributo y método heredado
+        System.out.println("Salario: $" + gerenteTI.getSalario()); // Salida: Salario: $90000.0
+    }
+}</code></pre>
+            <p>Como se puede ver, el objeto <code>gerenteTI</code> puede invocar <code>trabajar()</code> y <code>getSalario()</code> sin problemas, ya que los ha heredado de <code>Empleado</code>.</p>
+
+            <h3>3.4 Referencia al Objeto de la Clase Base</h3>
+            <p>A veces, desde una clase derivada, necesitamos acceder a miembros (métodos o constructores) de la clase base, especialmente cuando hemos redefinido un método y queremos invocar la implementación original. Para esto, Java proporciona la palabra clave <code>super</code>.</p>
+            <ul>
+                <li><strong><code>super()</code></strong>: Llama al constructor de la clase base. Debe ser la primera instrucción en el constructor de la clase derivada.</li>
+                <li><strong><code>super.miembro</code></strong>: Accede a un método o atributo de la clase base.</li>
+            </ul>
+
+            <h4>Ejemplo Práctico en Java:</h4>
+            <p>Supongamos que la clase <code>Empleado</code> tiene un método para mostrar detalles y <code>Gerente</code> quiere extender esa funcionalidad.</p>
+            <pre><code class="language-java">class Empleado {
+    String nombre;
+    double salario;
+    
+    // Constructor
+    public Empleado(String nombre, double salario) {
+        this.nombre = nombre;
+        this.salario = salario;
+    }
+
+    public void mostrarDetalles() {
+        System.out.println("Nombre: " + nombre);
+        System.out.println("Salario: " + salario);
+    }
+}
+
+class Gerente extends Empleado {
+    String departamento;
+
+    public Gerente(String nombre, double salario, String departamento) {
+        // 1. Llama al constructor de Empleado
+        super(nombre, salario); 
+        this.departamento = departamento;
+    }
+
+    @Override
+    public void mostrarDetalles() {
+        // 2. Llama al método mostrarDetalles() de la clase base
+        super.mostrarDetalles(); 
+        System.out.println("Departamento: " + departamento);
+    }
+}</code></pre>
+            <p>Al llamar a <code>mostrarDetalles()</code> en un objeto <code>Gerente</code>, primero se ejecutará la versión de la clase base (gracias a <code>super.mostrarDetalles()</code>) y luego se añadirá la información específica del gerente.</p>
+
+            <h3>3.5 Constructores y Destructores en Clases Derivadas</h3>
+            <h4>Constructores</h4>
+            <p>Los constructores <strong>no se heredan</strong>. Cada clase es responsable de definir sus propios constructores. Sin embargo, cuando se crea un objeto de una clase derivada, el constructor de la clase base <strong>siempre se invoca primero</strong>. Si no se llama explícitamente a un constructor de la base con <code>super(...)</code>, Java intentará llamar al constructor por defecto (sin argumentos) de la superclase. Si la superclase no tiene un constructor por defecto, ocurrirá un error de compilación.</p>
+
+            <h4>Ejemplo Práctico en Java:</h4>
+            <pre><code class="language-java">class Vehiculo {
+    String marca;
+
+    public Vehiculo(String marca) {
+        this.marca = marca;
+        System.out.println("Constructor de Vehiculo ejecutado.");
+    }
+}
+
+class Coche extends Vehiculo {
+    String modelo;
+
+    public Coche(String marca, String modelo) {
+        // Se debe llamar explícitamente al constructor de Vehiculo
+        // porque no tiene uno por defecto.
+        super(marca);
+        this.modelo = modelo;
+        System.out.println("Constructor de Coche ejecutado.");
+    }
+}
+
+public class DemoConstructor {
+    public static void main(String[] args) {
+        Coche miCoche = new Coche("Toyota", "Corolla");
+        // Salida:
+        // Constructor de Vehiculo ejecutado.
+        // Constructor de Coche ejecutado.
+    }
+}</code></pre>
+
+            <h4>Destructores</h4>
+            <p>Java gestiona la memoria automáticamente a través del <strong>Recolector de Basura (Garbage Collector)</strong>. Por lo tanto, en Java no existen los "destructores" como en C++. El recolector de basura elimina los objetos cuando ya no son referenciados, y se puede usar el método <code>finalize()</code> para realizar tareas de limpieza justo antes de que un objeto sea destruido, aunque su uso no es recomendado y su ejecución no está garantizada.</p>
+
+            <h3>3.6 Redefinición de Métodos en Clases Derivadas</h3>
+            <p>Una clase derivada puede proporcionar una implementación específica para un método que ya está definido en su clase base. Esto se conoce como <strong>redefinición de métodos</strong> (o anulación, del inglés <em>overriding</em>).</p>
+            <p>Para redefinir un método, el nuevo método en la clase derivada debe tener la misma firma (nombre, número y tipo de parámetros) que el método en la clase base. Es una buena práctica usar la anotación <code>@Override</code> para que el compilador verifique que el método se está redefiniendo correctamente.</p>
+
+            <h4>Ejemplo Práctico en Java:</h4>
+            <p>Imaginemos que cada animal hace un sonido diferente.</p>
+            <pre><code class="language-java">class Animal {
+    public void hacerSonido() {
+        System.out.println("El animal hace un sonido genérico.");
+    }
+}
+
+class Perro extends Animal {
+    @Override
+    public void hacerSonido() {
+        System.out.println("El perro ladra: ¡Guau!");
+    }
+}
+
+class Gato extends Animal {
+    @Override
+    public void hacerSonido() {
+        System.out.println("El gato maúlla: ¡Miau!");
+    }
+}
+
+public class DemoPolimorfismo {
+    public static void main(String[] args) {
+        Animal miAnimal = new Animal();
+        Animal miPerro = new Perro();
+        Animal miGato = new Gato();
+
+        miAnimal.hacerSonido(); // Salida: El animal hace un sonido genérico.
+        miPerro.hacerSonido();  // Salida: El perro ladra: ¡Guau!
+        miGato.hacerSonido();   // Salida: El gato maúlla: ¡Miau!
+    }
+}</code></pre>
+            <p>Este ejemplo también demuestra el <strong>polimorfismo</strong>, donde una misma llamada al método (<code>hacerSonido()</code>) se comporta de manera diferente dependiendo del tipo real del objeto en tiempo de ejecución.</p>
+
+            <h3>Conclusión</h3>
+            <p>La herencia es un mecanismo poderoso que fomenta la organización jerárquica, la reutilización de código y la extensibilidad del software. Al permitir que las clases derivadas hereden y especialicen las características de las clases base, se pueden construir sistemas complejos de manera más eficiente y mantenible. Entender conceptos como el uso de <code>super</code>, la cadena de constructores y la redefinición de métodos es esencial para aprovechar al máximo las capacidades de la programación orientada a objetos en Java.</p>
+
+            <h3>Bibliografía</h3>
+            <ul>
+                <li>Deitel, P. J., & Deitel, H. M. (2012). <em>Cómo programar en Java</em> (9a ed.). Pearson Educación.</li>
+                <li>Joyanes Aguilar, L. (2013). <em>Fundamentos de Programación: Algoritmos, estructura de datos y objetos</em> (4a ed.). McGraw-Hill.</li>
+                <li>Ceballos Sierra, F. J. (2015). <em>Java 8: Curso de programación</em>. RA-MA Editorial.</li>
+            </ul>
+        </section>
+
+        <section id="polimorfismo" class="content-section placeholder">
+            <h2>Polimorfismo</h2>
+            <p>Contenido sobre Polimorfismo se agregará aquí.</p>
+            <p>El polimorfismo es la capacidad de un objeto de tomar muchas formas. En Java, se refiere a la capacidad de una referencia de variable de tipo clase base para referirse a un objeto de una clase derivada. Esto permite un diseño más flexible y extensible.</p>
+            <p><strong>Ejemplo conceptual:</strong></p>
+            <pre><code class="language-java">class Figura {
+    public void dibujar() {
+        System.out.println("Dibujando una figura genérica.");
+    }
+}
+
+class Circulo extends Figura {
+    @Override
+    public void dibujar() {
+        System.out.println("Dibujando un círculo.");
+    }
+}
+
+class Cuadrado extends Figura {
+    @Override
+    public void dibujar() {
+        System.out.println("Dibujando un cuadrado.");
+    }
+}
+
+public class DemoPolimorfismoFiguras {
+    public static void main(String[] args) {
+        Figura f1 = new Circulo();
+        Figura f2 = new Cuadrado();
+        Figura f3 = new Figura();
+
+        f1.dibujar(); // Salida: Dibujando un círculo.
+        f2.dibujar(); // Salida: Dibujando un cuadrado.
+        f3.dibujar(); // Salida: Dibujando una figura genérica.
+    }
+}
+</code></pre>
+        </section>
+
+        <section id="excepciones" class="content-section placeholder">
+            <h2>Manejo de Excepciones</h2>
+            <p>Contenido sobre Excepciones se agregará aquí.</p>
+            <p>Las excepciones son eventos que interrumpen el flujo normal de un programa. En Java, se manejan utilizando bloques <code>try-catch-finally</code> para gestionar errores de forma elegante y evitar que el programa falle inesperadamente.</p>
+            <p><strong>Ejemplo conceptual:</strong></p>
+            <pre><code class="language-java">public class DemoExcepciones {
+    public static void main(String[] args) {
+        try {
+            int resultado = 10 / 0; // Esto causará una ArithmeticException
+            System.out.println(resultado);
+        } catch (ArithmeticException e) {
+            System.err.println("Error: División por cero.");
+            // e.printStackTrace(); // Para ver el rastro completo de la excepción
+        } finally {
+            System.out.println("Este bloque siempre se ejecuta, haya excepción o no.");
+        }
+
+        try {
+            String[] nombres = {"Ana", "Luis"};
+            System.out.println(nombres[2]); // Esto causará una ArrayIndexOutOfBoundsException
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.err.println("Error: Índice fuera de los límites del arreglo.");
+        }
+    }
+}
+</code></pre>
+        </section>
+
+        <section id="flujos-archivos" class="content-section placeholder">
+            <h2>Flujos y Archivos (I/O)</h2>
+            <p>Contenido sobre Flujos y Archivos se agregará aquí.</p>
+            <p>En Java, la entrada/salida (I/O) se maneja a través de flujos (streams), que son secuencias de datos. Pueden ser de entrada (para leer datos) o de salida (para escribir datos). Se utilizan para interactuar con archivos, la consola, redes, etc.</p>
+            <p><strong>Ejemplo conceptual de escritura a un archivo:</strong></p>
+            <pre><code class="language-java">import java.io.FileWriter;
+import java.io.IOException;
+
+public class EscrituraArchivo {
+    public static void main(String[] args) {
+        String texto = "Hola, este es un texto de prueba para el archivo.";
+        String nombreArchivo = "miArchivo.txt";
+
+        try (FileWriter writer = new FileWriter(nombreArchivo)) {
+            writer.write(texto);
+            System.out.println("Se ha escrito en el archivo: " + nombreArchivo);
+        } catch (IOException e) {
+            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+        }
+    }
+}
+</code></pre>
+            <p><strong>Ejemplo conceptual de lectura de un archivo:</strong></p>
+            <pre><code class="language-java">import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.IOException;
+
+public class LecturaArchivo {
+    public static void main(String[] args) {
+        String nombreArchivo = "miArchivo.txt"; // Asume que el archivo ya existe
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
+            String linea;
+            System.out.println("Contenido del archivo:");
+            while ((linea = reader.readLine()) != null) {
+                System.out.println(linea);
+            }
+        } catch (IOException e) {
+            System.err.println("Error al leer el archivo: " + e.getMessage());
+        }
+    }
+}
+</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Conceptos de POO en Java. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
