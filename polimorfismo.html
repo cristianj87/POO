@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programación Orientada a Objetos: Polimorfismo en Java</title>
+    <style>
+        /* Estilos Generales y Tipografía */
+        :root{
+            --primary:#007bff;
+            --accent:#28a745;
+            --muted:#777;
+            --bg:#f4f7f9;
+            --card:#ffffff;
+            --nav-bg:rgba(255,255,255,0.95);
+            --glass-shadow: 0 6px 18px rgba(17,24,39,0.08);
+        }
+        html{scroll-behavior:smooth}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .layout{
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 24px;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px 40px;
+        }
+
+        /* Responsive: móvil usa columna única */
+        @media (max-width: 900px){
+            .layout{grid-template-columns: 1fr;}
+        }
+
+        /* Encabezado */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 28px 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
+
+        header p {font-size: 0.95rem; opacity: 0.95; margin:6px 0 0}
+
+        /* Navegación lateral */
+        nav.side {
+            position: sticky;
+            top: 20px;
+            align-self: start;
+            background: var(--nav-bg);
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: var(--glass-shadow);
+            height: fit-content;
+        }
+
+        .nav-header{
+            display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
+        }
+
+        .nav-title{font-weight:700;color:var(--primary);}
+
+        .nav-list{list-style:none;padding:0;margin:0;}
+        .nav-list li{margin:8px 0}
+        .nav-list a{
+            display:block;padding:8px 10px;border-radius:6px;text-decoration:none;color:#1f2937;
+            font-weight:600;font-size:0.95rem;
+        }
+        .nav-list a:hover{background:#eef6ff;color:var(--primary)}
+        .nav-list a.active{background:linear-gradient(90deg,var(--primary),#0056d6);color:white}
+
+        /* Botón hamburguesa móvil */
+        .hambtn{
+            display:none;background:transparent;border:0;cursor:pointer;font-size:1.1rem;padding:6px;border-radius:6px
+        }
+        @media (max-width:900px){
+            .hambtn{display:inline-flex;align-items:center}
+            nav.side{position:relative;margin-bottom:12px}
+            .nav-list{display:none}
+            .nav-list.show{display:block}
+        }
+
+        /* Contenido principal */
+        main.container {
+            padding: 0;
+        }
+
+        section {
+            background-color: var(--card);
+            margin: 20px 0;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(15,23,42,0.04);
+        }
+
+        h2 {color: var(--primary);border-bottom:2px solid #e9ecef;padding-bottom:10px;margin-top:0}
+        h3 {color: var(--accent);margin-top:18px}
+
+        pre {
+            background-color: #272822; /* Fondo oscuro tipo editor de código */
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .keyword {color: var(--primary);font-weight:700}
+        .java-keyword {color:#f92672;font-weight:700}
+
+        footer {text-align:center;padding:18px 0;color:var(--muted);font-size:0.9em}
+
+        .bibliography{background:#f1f5f9;padding:18px;border-radius:8px}
+
+        /* Mejora de accesibilidad de foco en enlaces */
+        a:focus{outline:3px solid rgba(0,123,255,0.18);outline-offset:3px}
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="max-width:1200px;margin:0 auto;padding:0 20px;">
+            <h1>Programación Orientada a Objetos:</h1>
+            <h1>Unidad 4. Polimorfismo 🧩</h1>
+            <p>El arte de tener "muchas formas" en el código: Fundamentos, Clases Abstractas e Interfaces.</p>
+        </div>
+    </header>
+
+    <div class="layout">
+        <nav class="side" aria-label="Menú de la unidad">
+            <div class="nav-header">
+                <div class="nav-title">Contenido - Unidad 4</div>
+                <button class="hambtn" id="hambtn" aria-expanded="false" aria-controls="nav-list">☰</button>
+            </div>
+            <ul class="nav-list" id="nav-list">
+                <li><a href="#introduccion">Introducción</a></li>
+                <li><a href="#definicion">4.1 Definición</a></li>
+                <li><a href="#clases-abstractas">4.2 Clases Abstractas</a></li>
+                <li><a href="#interfaces">4.3 Interfaces</a></li>
+                <li><a href="#variables-polimorficas">4.4 Variables Polimórficas</a></li>
+                <li><a href="#reutilizacion">4.5 Reutilización de Código</a></li>
+                <li><a href="#conclusion">Conclusión</a></li>
+                <li><a href="#bibliografia">Bibliografía</a></li>
+            </ul>
+        </nav>
+
+        <main class="container" role="main">
+
+            <section id="introduccion">
+                <h2>Introducción a la POO y el Polimorfismo</h2>
+                <p>El Polimorfismo (del griego <em>poli</em> -muchas- y <em>morfo</em> -formas-) es un pilar fundamental de la Programación Orientada a Objetos (POO). Este concepto dota a los lenguajes como Java de una flexibilidad excepcional al permitir que una única interfaz o referencia maneje múltiples tipos de datos o implementaciones de métodos. En esencia, permite tratar a objetos de diferentes clases de manera uniforme si comparten una clase base o un contrato (interfaz), simplificando el código, haciéndolo más limpio, extensible y fácil de mantener.</p>
+            </section>
+
+            <section id="definicion">
+                <h2>4.1 Definición</h2>
+                <p>El <strong>Polimorfismo</strong> se refiere a la capacidad de una referencia de variable, función o un objeto para tomar <strong>múltiples formas</strong> en el contexto de una jerarquía de clases o de la implementación de un contrato. En Java, se manifiesta principalmente en dos formas:</p>
+                <ul>
+                    <li><strong>Polimorfismo en Tiempo de Compilación (Sobrecarga de Métodos o Overloading):</strong>Permite definir varios métodos con el mismo nombre en la misma clase, siempre que tengan diferentes listas de parámetros (distinto número, tipo o orden de los argumentos)</li>
+                    <li><strong>Polimorfismo en Tiempo de Ejecución (Sobrescritura de Métodos o Overriding y Polimorfismo de Subtipos):</strong> Permite que una referencia de la clase base (o interfaz) apunte a objetos de cualquiera de sus clases derivadas o clases implementadoras, garantizando que el método sobrescrito correcto sea llamado en tiempo de ejecución. Este es el polimorfismo más poderoso y el foco principal de esta unidad.</li>
+                </ul>
+
+                <h3>Ejemplo Práctico: Polimorfismo de Subtipos</h3>
+                <pre>
+class Animal {
+    public <span class="java-keyword">void</span> hacerSonido() {
+        System.out.println("El animal hace un sonido genérico.");
+    }
+}
+class Perro <span class="java-keyword">extends</span> Animal {
+    <span class="java-keyword">@Override</span>
+    public <span class="java-keyword">void</span> hacerSonido() {
+        System.out.println("El perro ladra: ¡Guau! ¡Guau!");
+    }
+}
+class Gato <span class="java-keyword">extends</span> Animal {
+    <span class="java-keyword">@Override</span>
+    public <span class="java-keyword">void</span> hacerSonido() {
+        System.out.println("El gato maúlla: ¡Miau!");
+    }
+}
+public class PruebaPolimorfismo {
+    public static void main(String[] args) {
+        Animal miMascota1 = new Perro(); 
+        Animal miMascota2 = new Gato(); 
+        
+        miMascota1.hacerSonido(); // Ejecuta el método de Perro
+        miMascota2.hacerSonido(); // Ejecuta el método de Gato
+    }
+}
+                </pre>
+            </section>
+
+            <section id="clases-abstractas">
+                <h2>4.2 Clases Abstractas</h2>
+                <p>Una <span class="keyword">Clase Abstracta</span> en Java se declara con la palabra clave <span class="java-keyword">abstract</span>. Sirve como una plantilla o superclase parcial para otras clases.</p>
+                <ul>
+                    <li>No pueden ser instanciadas directamente (no se puede crear un objeto de una clase abstracta con <strong>new ClaseAbstracta()</strong>).</li>
+                    <li>Pueden contener métodos abstractos y métodos concretos (con implementación).</li>
+                    <li>Su objetivo es definir una estructura común y forzar la implementación de ciertos métodos en sus subclases.</li>
+                </ul>
+
+                <p>Un <span class="keyword">Método Abstracto</span> se declara usando la palabra clave <span class="java-keyword">abstract</span>. y no tiene cuerpo (termina con un punto y coma). Solo declara la firma del método, indicando qué debe hacer, pero no cómo.</p>
+                <ul>
+                    <li>Cualquier clase que contenga al menos un método abstracto debe ser declarada como abstracta.</li>
+                    <li>Toda clase concreta (no abstracta) que herede de una clase abstracta está obligada a proporcionar una implementación (<strong>@Override</strong>) para todos los métodos abstractos heredados.</li>
+                </ul>
+
+                <h3>Ejemplo Práctico: Clase Abstracta</h3>
+                <pre>
+    <span class="java-keyword">abstract</span> <span class="java-keyword">class</span> Figura {
+        <span class="java-keyword">protected</span> String color;
+    
+        <span class="java-keyword">public</span> Figura(String color) { <span style="color: #75715e;">/* Constructor permitido */</span> }
+    
+        <span class="java-keyword">public</span> <span class="java-keyword">abstract</span> <span class="java-keyword">double</span> calcularArea(); <span style="color: #75715e;">// Método sin implementación</span>
+    
+        <span class="java-keyword">public</span> <span class="java-keyword">void</span> mostrarColor() { <span style="color: #75715e;">// Método concreto</span>
+            System.out.println("La figura es de color: " + <span class="java-keyword">this</span>.color);
+        }
+    }
+    
+    <span class="java-keyword">class</span> Circulo <span class="java-keyword">extends</span> Figura {
+        <span class="java-keyword">private</span> <span class="java-keyword">double</span> radio;
+    
+        <span class="java-keyword">public</span> Circulo(String color, <span class="java-keyword">double</span> radio) { <span class="java-keyword">super</span>(color); <span class="java-keyword">this</span>.radio = radio; }
+    
+        <span class="java-keyword">@Override</span>
+        <span class="java-keyword">public</span> <span class="java-keyword">double</span> calcularArea() { <span style="color: #75715e;">// Implementación obligatoria</span>
+            <span class="java-keyword">return</span> Math.PI * radio * radio;
+        }
+    }
+                </pre>
+            </section>
+
+            <section id="interfaces">
+                <h2>4.3 Interfaces</h2>
+                <p>Una <span class="keyword">Interfaz</span> es un tipo de referencia que, al igual que las clases abstractas, define un contrato. Se declara usando la palabra clave<span class="java-keyword">interface</span>.</p>
+                <ul>
+                    <li><strong>Definición:</strong> Son completamente abstractas (antes de Java 8). Definen la <strong>capacidad</strong> o el <strong>comportamiento</strong> de una clase, modelando la relación <strong>"puede-hacer"</strong>.</li>
+                    <li><strong>Implementación:</strong> Una clase usa la palabra clave <span class="java-keyword">implements</span> para adoptar una interfaz. La clase que implementa una interfaz debe proporcionar una implementación concreta para todos sus métodos (a menos que sea una clase abstracta).</li>
+                    <li><strong>Herencia de Interfaces:</strong> Una interfaz puede heredar de otra interfaz usando <span class="java-keyword">extends</span>. Una interfaz puede extender varias interfaces a la vez (herencia múltiple de interfaces). La interfaz hija hereda todos los métodos abstractos de sus interfaces padre.</li>
+                </ul>
+                <h3>Ejemplo Práctico: Interfaces y Múltiple Implementación</h3>
+                <pre>
+    <span class="java-keyword">interface</span> Conducible {
+        <span class="java-keyword">void</span> arrancarMotor(); <span style="color: #75715e;">// Implícitamente public abstract</span>
+        <span class="java-keyword">void</span> acelerar(<span class="java-keyword">int</span> velocidad); 
+    }
+    
+    <span class="java-keyword">interface</span> Recargable {
+        <span class="java-keyword">void</span> cargarBateria();
+    }
+    
+    <span class="java-keyword">class</span> CocheElectrico <span class="java-keyword">implements</span> Conducible, Recargable { <span style="color: #75715e;">// Múltiple implementación</span>
+        <span class="java-keyword">@Override</span> <span class="java-keyword">public</span> <span class="java-keyword">void</span> arrancarMotor() { <span style="color: #75715e;">/* Implementación... */</span> }
+        <span class="java-keyword">@Override</span> <span class="java-keyword">public</span> <span class="java-keyword">void</span> acelerar(<span class="java-keyword">int</span> velocidad) { <span style="color: #75715e;">/* Implementación... */</span> }
+        <span class="java-keyword">@Override</span> <span class="java-keyword">public</span> <span class="java-keyword">void</span> cargarBateria() { <span style="color: #75715e;">/* Implementación... */</span> }
+    }
+                </pre>
+        </section>
+
+            <section id="variables-polimorficas">
+                <h2>4.4 Variables Polimórficas (Plantillas - Generics)</h2>
+                <p><span class="keyword">Variables Polimórficas</span> se refieren a cualquier variable que puede referenciar objetos de distintos tipos relacionados por herencia o implementación. Las <strong>Plantillas</strong> (o <strong>Generics</strong>, usando el operador &lt;T&gt;) son una forma avanzada de polimorfismo, conocido como <strong>Polimorfismo Paramétrico</strong>.</p>
+
+                <p><span class="keyword">Uso y Aplicaciones</span></p>
+                <p>Las aplicaciones principales de los Generics son:</p>
+                <ul>
+                    <li><strong>Colecciones de Tipo Seguro:</strong> Permiten definir colecciones (como ArrayList o HashMap) que solo pueden contener un tipo específico de objetos, eliminando la necesidad de casting y previniendo errores de tipo en tiempo de ejecución.</li>
+                    <li><strong>Clases y Métodos Genéricos: </strong>Creación de estructuras de datos (como pilas, colas, árboles) o métodos que funcionan independientemente del tipo de objeto que manipulan.</li>
+                </ul>
+                <h3>Ejemplo Práctico: Plantillas (Generics)</h3>
+                <pre>
+    <span class="java-keyword">class</span> Caja&lt;T&gt; { <span style="color: #75715e;">// Clase genérica con parámetro de tipo T</span>
+        <span class="java-keyword">private</span> T contenido;
+    
+        <span class="java-keyword">public</span> <span class="java-keyword">void</span> poner(T objeto) {
+            <span class="java-keyword">this</span>.contenido = objeto;
+        }
+    
+        <span class="java-keyword">public</span> T sacar() { <span style="color: #75715e;">// El tipo de retorno es T</span>
+            <span class="java-keyword">return</span> contenido;
+        }
+    }
+    
+    <span class="java-keyword">public</span> <span class="java-keyword">class</span> PruebaGenerics {
+        <span class="java-keyword">public</span> <span class="java-keyword">static</span> <span class="java-keyword">void</span> main(String[] args) {
+            Caja&lt;String&gt; cajaDeTexto = <span class="java-keyword">new</span> Caja&lt;&gt;(); 
+            cajaDeTexto.poner("Un libro");
+            String texto = cajaDeTexto.sacar(); <span style="color: #75715e;">// Tipo seguro, no requiere casting</span>
+        }
+    }
+            </pre>
+        </section>
+
+            <section id="reutilizacion">
+                <h2>4.5 Reutilización de Código</h2>
+                <p>El polimorfismo es el principal motor de la <span class="keyword">reutilización de código</span> en POO, especialmente a través de la ligadura dinámica. Sus beneficios clave son:</p>
+                <ul>
+                    <li><strong>Abstracción de Comportamiento:</strong> Las clases abstractas e interfaces definen un contrato común una sola vez. Las subclases/implementadoras solo se encargan de la lógica específica.</li>
+                    <li><strong>Modularidad y Extensibilidad:</strong> Permite escribir código que opera sobre el tipo base o interfaz. Al añadir una nueva clase derivada (ej. un <code>Camion</code> que implementa <code>Conducible</code>), el código existente que manipula objetos <code>Conducible</code> <strong>no necesita ser modificado</strong>.</li>
+                    <li><strong>Patrones de Diseño:</strong> Es clave en patrones como Estrategia o Fábrica, donde se intercambian implementaciones específicas (comportamientos) sin cambiar el código cliente.</li>
+                </ul>
+            </section>
+
+            <section id="conclusion">
+                <h2>Conclusión</h2>
+                <p>El polimorfismo no es solo una característica de la POO, sino una filosofía de diseño. Al utilizar clases abstractas e interfaces, el desarrollador puede definir un conjunto de comportamientos esperados (contratos) y diferir su implementación a clases específicas. Esta flexibilidad, combinada con el polimorfismo paramétrico de los Generics, resulta en sistemas robustos, modulares y, crucialmente, altamente <strong>extensibles</strong>. Dominar el polimorfismo es sinónimo de escribir código limpio, desacoplado y listo para adaptarse a futuros requisitos.</p>
+                <p id="interact-message" style="color: var(--primary); font-weight: 700;"></p>
+                <button id="btn-toggle-info">Mostrar/Ocultar Mensaje Interactivo</button>
+            </section>
+
+            <section id="bibliografia" class="bibliography">
+                <h2>Bibliografía (Formato APA)</h2>
+                <p>Aunque la información es una síntesis de conceptos fundamentales de POO, se presenta en el formato APA como referencia general:</p>
+                <p>Joyanes Aguilar, L. (2019). <em>Programación Orientada a Objetos con Java</em>. McGraw-Hill Interamericana.</p>
+                <p>Oracle. (s.f.). <em>The Java Tutorials: Interfaces and Inheritance</em>. Recuperado de https://docs.oracle.com/javase/tutorial/java/IandI/index.html</p>
+                <p>Deitel, P. J., &amp; Deitel, H. M. (2018). <em>Java: How to Program (Early Objects)</em> (11.ª ed.). Pearson.</p>
+            </section>
+
+        </main>
+    </div>
+
+    <footer>
+        &copy; 2025 Unidad 4. Polimorfismo en Java.
+    </footer>
+
+    <script>
+        // Interactividad: botón Mostrar/Ocultar mensaje
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.getElementById('btn-toggle-info');
+            const message = document.getElementById('interact-message');
+            message.textContent = "¡El Polimorfismo hace que este botón pueda ejecutar diferentes acciones sin cambiar su tipo!";
+            let isVisible = true;
+
+            button.addEventListener('click', () => {
+                if (isVisible) {
+                    message.style.display = 'none';
+                    button.textContent = 'Mostrar Mensaje Interactivo';
+                } else {
+                    message.style.display = 'block';
+                    button.textContent = 'Ocultar Mensaje Interactivo';
+                }
+                isVisible = !isVisible;
+            });
+
+            // Hamburguesa móvil
+            const hambtn = document.getElementById('hambtn');
+            const navlist = document.getElementById('nav-list');
+            hambtn.addEventListener('click', () => {
+                const isShown = navlist.classList.toggle('show');
+                hambtn.setAttribute('aria-expanded', String(isShown));
+            });
+
+            // Active link highlight usando IntersectionObserver
+            const sections = document.querySelectorAll('main.container section[id]');
+            const navLinks = document.querySelectorAll('.nav-list a');
+
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const id = entry.target.id;
+                    const link = document.querySelector('.nav-list a[href="#' + id + '"]');
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(a => a.classList.remove('active'));
+                        if (link) link.classList.add('active');
+                    }
+                });
+            }, { root: null, rootMargin: '-40% 0px -40% 0px', threshold: 0 });
+
+            sections.forEach(s => io.observe(s));
+
+            // Close mobile menu on link click
+            navLinks.forEach(a => a.addEventListener('click', () => {
+                if (navlist.classList.contains('show')) navlist.classList.remove('show');
+            }));
+        });
+    </script>
+
+</body>
+</html>
