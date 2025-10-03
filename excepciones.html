@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unidad 5 — Excepciones (Java)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Estilos Generales y Tipografía */
+    :root{
+        --primary:#007bff;
+        --accent:#28a745;
+        --muted:#777;
+        --bg:#f4f7f9;
+        --card:#ffffff;
+        --nav-bg:rgba(255,255,255,0.95);
+        --glass-shadow: 0 6px 18px rgba(17,24,39,0.08);
+    }
+    html{scroll-behavior:smooth}
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg);
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .layout{
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 24px;
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 20px 40px;
+    }
+
+    /* Responsive: móvil usa columna única */
+    @media (max-width: 900px){
+        .layout{grid-template-columns: 1fr;}
+    }
+
+    /* Encabezado */
+    header {
+        background-color: var(--primary);
+        color: white;
+        padding: 28px 0;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        letter-spacing: 1px;
+    }
+
+    header p {font-size: 0.95rem; opacity: 0.95; margin:6px 0 0}
+
+    /* Navegación lateral */
+    nav.side {
+        position: sticky;
+        top: 20px;
+        align-self: start;
+        background: var(--nav-bg);
+        border-radius: 10px;
+        padding: 18px;
+        box-shadow: var(--glass-shadow);
+        height: fit-content;
+    }
+
+    .nav-header{
+        display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
+    }
+
+    .nav-title{font-weight:700;color:var(--primary);}
+
+    .nav-list{list-style:none;padding:0;margin:0;}
+    .nav-list li{margin:8px 0}
+    .nav-list a{
+        display:block;padding:8px 10px;border-radius:6px;text-decoration:none;color:#1f2937;
+        font-weight:600;font-size:0.95rem;
+    }
+    .nav-list a:hover{background:#eef6ff;color:var(--primary)}
+    .nav-list a.active{background:linear-gradient(90deg,var(--primary),#0056d6);color:white}
+
+    /* Botón hamburguesa móvil */
+    .hambtn{
+        display:none;background:transparent;border:0;cursor:pointer;font-size:1.1rem;padding:6px;border-radius:6px
+    }
+    @media (max-width:900px){
+        .hambtn{display:inline-flex;align-items:center}
+        nav.side{position:relative;margin-bottom:12px}
+        .nav-list{display:none}
+        .nav-list.show{display:block}
+    }
+
+    /* Contenido principal */
+    main.container {
+        padding: 0;
+    }
+
+    section {
+        background-color: var(--card);
+        margin: 20px 0;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(15,23,42,0.04);
+    }
+
+    h2 {color: var(--primary);border-bottom:2px solid #e9ecef;padding-bottom:10px;margin-top:0}
+    h3 {color: var(--accent);margin-top:18px}
+
+    pre {
+        background-color: #272822; /* Fondo oscuro tipo editor de código */
+        color: #f8f8f2;
+        padding: 15px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-family: 'Consolas', 'Courier New', monospace;
+        font-size: 0.9em;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .keyword {color: var(--primary);font-weight:700}
+    .java-keyword {color:#f92672;font-weight:700}
+
+    footer {text-align:center;padding:18px 0;color:var(--muted);font-size:0.9em}
+
+    .bibliography{background:#f1f5f9;padding:18px;border-radius:8px}
+
+    /* Mejora de accesibilidad de foco en enlaces */
+    a:focus{outline:3px solid rgba(0,123,255,0.18);outline-offset:3px}
+
+</style>
+</head>
+<body>
+
+<header>
+    <div style="max-width:1200px;margin:0 auto;padding:0 20px;">
+        <h1>Programación Orientada a Objetos:</h1>
+        <h1>Unidad 5. Excepciones 🧩</h1>
+        <p>El manejo de excepciones no elimina los errores, pero te permite controlarlos para que tu programa siga funcionando de forma segura y ordenada.</p>
+    </div>
+</header>
+
+<div class="layout">
+    <nav class="side" aria-label="Menú de la unidad">
+        <div class="nav-header">
+            <div class="nav-title">Contenido - Unidad 5</div>
+            <button class="hambtn" id="hambtn" aria-expanded="false" aria-controls="nav-list">☰</button>
+        </div>
+        <ul class="nav-list" id="nav-list">
+          <li><a href="#introduccion">Introducción</a></li>
+          <li><a href="#definicion">5.1 Definición</a></li>
+          <li><a href="#tipos">5.2 Tipos de excepciones</a></li>
+          <li><a href="#propagacion">5.3 Propagación</a></li>
+          <li><a href="#gestion">5.4 Gestión (manejo y lanzamiento)</a></li>
+          <li><a href="#creacion">5.5 Excepciones definidas por el usuario</a></li>
+          <li><a href="#ejemplointegrado">Ejemplo integral</a></li>
+          <li><a href="#buenaspracticas">Buenas prácticas</a></li>
+          <li><a href="#conclusion">Conclusión</a></li>
+          <li><a href="#bibliografia">Bibliografía (APA)</a></li>
+        </ul>
+    </nav>
+    <main class="container" role="main">
+      <main>
+        <section id="introduccion">
+          <h2>Introducción</h2>
+          <p class="muted">Las excepciones son el mecanismo que ofrece Java para manejar errores y condiciones anómalas durante la ejecución de un programa. Permiten separar el <i>código normal del código de manejo de errores</i>, facilitar la recuperación ante fallos, y propagar información sobre problemas hacia capas que puedan tratarlos. En esta unidad veremos qué son las excepciones, sus tipos, cómo se propagan, cómo gestionarlas correctamente (mecanismos de <strong>try/catch/finally</strong>, <strong>throws</strong>, try-with-resources), y cómo crear excepciones propias. Todos los ejemplos están en Java y son fáciles de seguir.</p>
+        </section>
+
+        <section id="definicion">
+          <h2>5.1 Definición</h2>
+          <p>En Java, una <strong>excepción</strong> es un evento que ocurre durante la ejecución de un programa, que detiene o altera el flujo normal de ejecución. Las excepciones y errores heredan de <code>Throwable</code>. La jerarquía relevante es:</p>
+          <p>Cuando ocurre un error que el sistema Java no puede manejar, se crea un objeto Exception. Este proceso se llama lanzamiento (<strong>throwing</strong>) de la excepción. El flujo de ejecución normal se detiene, y el sistema busca un bloque de código capaz de capturar (<strong>catching</strong>) y manejar la excepción. Si no se encuentra un manejador adecuado, el programa termina.</p>
+          <p>El objetivo principal del manejo de excepciones es:</p><ul class="muted">
+            <li>Separar el código de manejo de errores del código normal.</li>
+            <li>Propagar el error hacia arriba en la pila de llamadas hasta que se encuentre un manejador apropiado.</li>
+            <li>Permitir que el programa recupere el control y continúe la ejecución de forma ordenada.</li>
+            <li>Throwable
+              <ul><li><code>Error</code> (problemas graves, p. ej. <code>OutOfMemoryError</code>) que normalmente no se captura.</li>
+                  <li><code>Exception</code>
+                    <ul><li><code>RuntimeException</code> (unchecked)</li>
+                        <li>Otras excepciones comprobadas (checked)</li></ul></li></ul></li>
+            <li>En Java todas las excepciones y errores heredan de la clase Throwable. La jerarquía principal es:</li>
+          </ul>
+
+          <div class="card">
+            <h3>Ejemplo simple — NullPointerException</h3>
+            <div class="toolbar"><button class="btn" onclick="copyCode('code-null')">Copiar</button></div>
+            <pre id="code-null"><code>public class EjemploDefinicion {
+    public static void main(String[] args) {
+        String s = null;
+        // Esto lanzará NullPointerException en tiempo de ejecución (unchecked)
+        System.out.println(s.length());
+    }
+}
+</code></pre>
+          </div>
+        </section>
+
+        <section id="tipos">
+          <h2>5.2 Tipos de excepciones</h2>
+          <p>Clasificación principal:</p>
+          <ol class="muted">
+            <li><strong>Checked (comprobadas):</strong> Exigen manejo en tiempo de compilación. Obligan a declararlas o capturarlas (ej.: <code>IOException, ClassNotFoundException</code>).</li>
+            <li><strong>Unchecked / Runtime:</strong> No es obligatorio manejarlas (ej.: <code>NullPointerException, IllegalArgumentException, ArithmeticException</code>).</li>
+            <li><strong>Errors:</strong> Problemas graves; no se capturan en general (ej.: <code>StackOverflowError, OutOfMemoryError</code>).</li>
+            <li><strong>Excepciones personalizadas:</strong> Para modelar errores del dominio de la aplicación. Definidas por el programador para el dominio de la aplicación.</li>
+          </ol>
+
+          <div class="card">
+            <h3>Ejemplo: checked vs unchecked</h3>
+            <div class="toolbar"><button class="btn" onclick="copyCode('code-checked')">Copiar</button></div>
+            <pre id="code-checked"><code>import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class CheckedVsUnchecked {
+    public static void main(String[] args) {
+        // Unchecked: ArithmeticException
+        int x = 5 / 0; // ArithmeticException en tiempo de ejecución
+
+        // Checked: FileReader lanza IOException (compilador exige catch o throws)
+        try {
+            FileReader fr = new FileReader("archivo_inexistente.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+          </div>
+        </section>
+
+        <section id="propagacion">
+          <h2>5.3 Propagación de excepciones</h2>
+          <p>Si un método lanza una excepción y no la captura, esta sube a quien lo llamó. Esto se puede declarar con <code>throws</code> o capturar con <code>try/catch</code>.</p>
+          <ol class="muted">
+            <li>Cuando se lanza una excepción en un método, el entorno de ejecución de Java busca un bloque <code>catch</code> dentro de ese mismo método.</li>
+            <li>Si no lo encuentra, el método actual <strong>termina</strong> y la excepción es automáticamente relanzada al método que lo invocó (el método anterior en la pila de llamadas).</li>
+            <li>Este proceso se repite <strong>recursivamente</strong> hacia arriba en la pila de llamadas.</li>
+            <li>Si la excepción llega al método <code>main()</code> y no se maneja allí, el programa termina y se imprime un rastro de pila (stack trace) que muestra la secuencia de llamadas que condujo al error.</li>
+          </ol>
+          <div class="card">
+            <h3>Ejemplo: propagación con <code>throws</code></h3>
+            <div class="toolbar"><button class="btn" onclick="copyCode('code-prop')">Copiar</button></div>
+            <pre id="code-prop"><code>import java.io.IOException;
+
+public class Propagacion {
+    public static void main(String[] args) {
+        try {
+            nivelUno();
+        } catch (IOException e) {
+            System.out.println("Excepción capturada en main: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    static void nivelUno() throws IOException {
+        nivelDos();
+    }
+
+    static void nivelDos() throws IOException {
+        throw new IOException("Fallo simulado en nivelDos");
+    }
+}
+</code></pre>
+          </div>
+          <p><strong>Explicación: </strong>nivelDos lanza <i>IOException</i>. No la maneja, la declara con throws y la deja subir a nivelUno, que tampoco la maneja y la re-declara. Finalmente main la captura y procesa.</p>
+        </section>
+
+        <section id="gestion">
+          <h2>5.4 Gestión de excepciones: manejo y lanzamiento</h2>
+          <p>La gestión de excepciones incluye dos acciones principales: <strong>manejo y lanzamiento</strong>.</p>
+          <h3>Manejo de Excepciones (try - catch - finally)</h3>
+          <p>El manejo se realiza mediante los bloques try, catch y opcionalmente finally.</p>
+          <ol class="muted">
+            <li><strong>try:</strong> Encierra el código que potencialmente puede lanzar una excepción.</li>
+            <li><strong>catch:</strong> Sigue al bloque <strong>try</strong> y especifica el tipo de excepción que se va a capturar y las acciones a tomar para manejarla. Se pueden usar múltiples bloques catch.</li>
+            <li><strong>finally:</strong> Contiene código que se ejecutará siempre, sin importar si el bloque try terminó normalmente, lanzó una excepción o la excepción fue manejada. Es útil para liberar recursos (cerrar archivos, conexiones a bases de datos).</li>
+          </ol>
+          
+          <p>Captura y tratamiento. El bloque <code>finally</code> ejecuta acciones de limpieza.</p>
+          <div class="card">
+            <div class="toolbar"><button class="btn" onclick="copyCode('code-try')">Copiar</button></div>
+            <pre id="code-try"><code>public class TryCatchFinally {
+    public static void main(String[] args) {
+        try {
+            int[] a = {1, 2, 3};
+            System.out.println(a[5]); // IndexOutOfBoundsException
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            System.out.println("Índice inválido: " + ex.getMessage());
+        } finally {
+            System.out.println("Cleanup o acciones finales (se ejecuta siempre).");
+        }
+    }
+}
+</code></pre>
+          </div>
+
+          <h3>Múltiples catch y multi-catch</h3>
+          <p>Se pueden agrupar excepciones similares con <code>|</code>.</p>
+
+          <h3><code>throw</code> y <code>throws</code></h3>
+          <p><code>throw</code> lanza explicitamente una excepción; <code>throws</code> declara que el método puede propagarla.</p>
+          <div class="card">
+            <div class="toolbar"><button class="btn" onclick="copyCode('code-throw')">Copiar</button></div>
+            <pre id="code-throw"><code>public void validar(int valor) throws IllegalArgumentException {
+    if (valor < 0) {
+        throw new IllegalArgumentException("valor no puede ser negativo");
+    }
+}
+</code></pre>
+          </div>
+
+          <h3>Try-with-resources</h3>
+          <p>Maneja automáticamente el cierre de recursos que implementan <code>AutoCloseable</code>.</p>
+          <div class="card">
+            <div class="toolbar"><button class="btn" onclick="copyCode('code-tryres')">Copiar</button></div>
+            <pre id="code-tryres"><code>import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+
+public class TryWithResources {
+    public static void main(String[] args) {
+        String datos = "línea1\nlínea2";
+        try (BufferedReader br = new BufferedReader(new StringReader(datos))) {
+            String l;
+            while ((l = br.readLine()) != null) {
+                System.out.println(l);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+          </div>
+
+          <h3>Encadenamiento de excepciones (chaining)</h3>
+          <p>Al lanzar una nueva excepción, incluye la causa original para preservar el contexto:</p>
+          <div class="card">
+            <pre><code>try {
+    // código que lanza IOException
+} catch (IOException e) {
+    throw new RuntimeException("Error al procesar el archivo", e); // conserva la causa
+}
+</code></pre>
+          </div>
+        </section>
+
+        <section id="creacion">
+          <h2>5.5 Creación y manejo de excepciones definidas por el usuario</h2>
+          <p>Definir excepciones del dominio aporta claridad y control a los errores específicos de la aplicación. A menudo, es necesario definir excepciones personalizadas que se adapten mejor a la lógica de negocio de una aplicación.</p>
+
+          <h3>Excepción checked (extiende Exception)</h3>
+          <div class="card">
+            <div class="toolbar"><button class="btn" onclick="copyCode('code-pagoexc')">Copiar</button></div>
+            <pre id="code-pagoexc"><code>public class PagoException extends Exception {
+    public PagoException() { super(); }
+    public PagoException(String message) { super(message); }
+    public PagoException(String message, Throwable cause) { super(message, cause); }
+}
+</code></pre>
+          </div>
+
+          <h3>Excepción unchecked (extiende RuntimeException)</h3>
+          <div class="card">
+            <div class="toolbar"><button class="btn" onclick="copyCode('code-inputexc')">Copiar</button></div>
+            <pre id="code-inputexc"><code>public class InvalidUserInputException extends RuntimeException {
+    public InvalidUserInputException(String msg) { super(msg); }
+}
+</code></pre>
+          </div>
+
+          <h3>Uso práctico — validación y lanzamiento</h3>
+          <div class="card">
+            <div class="toolbar"><button class="btn" onclick="copyCode('code-proc')">Copiar</button></div>
+            <pre id="code-proc"><code>public class ProcesadorPagos {
+
+    public void procesar(double monto) throws PagoException {
+        if (monto <= 0) {
+            throw new PagoException("El monto debe ser mayor a 0");
+        }
+        // lógica de pago...
+        System.out.println("Pago procesado: " + monto);
+    }
+
+    public static void main(String[] args) {
+        ProcesadorPagos p = new ProcesadorPagos();
+        try {
+            p.procesar(-100);
+        } catch (PagoException e) {
+            System.out.println("Error en el pago: " + e.getMessage());
+        }
+    }
+}
+</code></pre>
+          </div>
+        </section>
+
+        <section id="ejemplointegrado">
+          <h2>Ejemplo integral</h2>
+          <p class="muted">Un pequeño programa que muestra validación, reempaquetado de excepciones, try-with-resources y parada al encontrar un error en la entrada.</p>
+
+          <div class="card">
+            <div class="toolbar"><button class="btn" onclick="copyCode('code-integrado')">Copiar</button></div>
+            <pre id="code-integrado"><code>import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+
+class EntradaInvalidaException extends Exception {
+    public EntradaInvalidaException(String message) { super(message); }
+}
+
+public class EjemploIntegrado {
+    public static void main(String[] args) {
+        try {
+            procesarEntrada("123\n-5\nabc\n");
+        } catch (EntradaInvalidaException e) {
+            System.out.println("Entrada inválida: " + e.getMessage());
+        }
+    }
+
+    static void procesarEntrada(String datos) throws EntradaInvalidaException {
+        try (BufferedReader br = new BufferedReader(new StringReader(datos))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                int val = parsearEntero(linea);
+                if (val < 0) {
+                    // lanzamos excepción del dominio para el caso de números negativos
+                    throw new EntradaInvalidaException("Valor negativo detectado: " + val);
+                }
+                System.out.println("Valor válido: " + val);
+            }
+        } catch (IOException e) {
+            // Este IOException no debería ocurrir con StringReader, pero lo reempaquetamos
+            throw new EntradaInvalidaException("Error de I/O: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            throw new EntradaInvalidaException("No es un número entero: " + e.getMessage());
+        }
+    }
+
+    static int parsearEntero(String s) {
+        return Integer.parseInt(s.trim()); // puede lanzar NumberFormatException
+    }
+}
+</code></pre>
+          </div>
+        </section>
+
+        <section id="buenaspracticas">
+          <h2>Buenas prácticas y recomendaciones</h2>
+          <ul class="muted">
+            <li>Capturar lo más específico posible; evitar <code>catch (Exception)</code> salvo cuando sea necesario.</li>
+            <li>No usar excepciones para control de flujo normal.</li>
+            <li>Incluir mensajes claros y preservar la causa original al re-lanzar (chaining).</li>
+            <li>Registrar (log) las excepciones con contexto (id, entradas, estado).</li>
+            <li>Usar try-with-resources para recursos automáticos.</li>
+            <li>No silenciar excepciones: documenta o registra si decides ignorarlas.</li>
+            <li>Documentar en la API con <code>@throws</code> qué excepciones lanza cada método.</li>
+          </ul>
+        </section>
+
+        <section id="conclusion">
+          <h2>Conclusión</h2>
+          <p class="muted">Las excepciones aumentan la robustez y claridad del código cuando se usan correctamente. Entender su jerarquía, propagación y manejo permite crear aplicaciones más resilientes y mantenibles. Las excepciones personalizadas ayudan a expresar fallos del dominio con precisión.</p>
+        </section>
+
+        <section id="bibliografia">
+          <h2>Bibliografía (APA)</h2>
+          <ol class="muted">
+            <li>Oracle. (s. f.). <em>The Java™ Tutorials: Exceptions</em>. Oracle.</li>
+            <li>Bloch, J. (2018). <em>Effective Java</em> (3.ª ed.). Addison-Wesley.</li>
+            <li>Schildt, H. (2019). <em>Java: The Complete Reference</em> (11.ª ed.). McGraw-Hill Education.</li>
+          </ol>
+        </section>
+
+        <footer>
+          <div>Guía lista para estudio y práctica</div>
+          <div class="muted">Incluye ejemplos listos para compilar y personalizar</div>
+        </footer>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // smooth scroll and active link
+    const links = document.querySelectorAll('nav a');
+    links.forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        e.preventDefault();
+        links.forEach(x=>x.classList.remove('active'));
+        a.classList.add('active');
+        const id = a.getAttribute('href').slice(1);
+        document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'});
+      })
+    })
+
+    // copy code function
+    function copyCode(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = el.innerText;
+      navigator.clipboard.writeText(text).then(()=>{
+        showToast('Código copiado al portapapeles');
+      }).catch(()=>{showToast('No se pudo copiar (navegador no soportado)');});
+    }
+
+    // simple toast
+    function showToast(msg){
+      const t = document.createElement('div');
+      t.textContent = msg;
+      Object.assign(t.style,{position:'fixed',right:'20px',bottom:'20px',background:'rgba(0,0,0,0.7)',color:'white',padding:'10px 14px',borderRadius:'8px',zIndex:9999,fontSize:'13px'});
+      document.body.appendChild(t);
+      setTimeout(()=>{t.style.transition='all 300ms';t.style.opacity='0';t.style.transform='translateY(10px)';},1300);
+      setTimeout(()=>document.body.removeChild(t),1700);
+    }
+
+    // add copy buttons to any pre without id
+    document.querySelectorAll('pre').forEach((pre, idx)=>{
+      if(!pre.id) pre.id = 'pre-' + idx;
+    });
+  </script>
+</body>
+</html>
