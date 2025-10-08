@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Unidad 6 - Flujos y archivos (Programación Orientada a Objetos)</title>
+  <style>
+    /* Estilos Generales y Tipografía */
+    :root{
+        --primary:#007bff;
+        --accent:#28a745;
+        --muted:#777;
+        --bg:#f4f7f9;
+        --card:#ffffff;
+        --nav-bg:rgba(255,255,255,0.95);
+        --glass-shadow: 0 6px 18px rgba(17,24,39,0.08);
+    }
+    html{scroll-behavior:smooth}
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg);
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .layout{
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 24px;
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 20px 40px;
+    }
+
+    /* Responsive: móvil usa columna única */
+    @media (max-width: 900px){
+        .layout{grid-template-columns: 1fr;}
+    }
+
+    /* Encabezado */
+    header {
+        background-color: var(--primary);
+        color: white;
+        padding: 28px 0;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        letter-spacing: 1px;
+    }
+
+    header p {font-size: 0.95rem; opacity: 0.95; margin:6px 0 0}
+
+    /* Navegación lateral */
+    nav.side {
+        position: sticky;
+        top: 20px;
+        align-self: start;
+        background: var(--nav-bg);
+        border-radius: 10px;
+        padding: 18px;
+        box-shadow: var(--glass-shadow);
+        height: fit-content;
+    }
+
+    .nav-header{
+        display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
+    }
+
+    .nav-title{font-weight:700;color:var(--primary);}
+
+    .nav-list{list-style:none;padding:0;margin:0;}
+    .nav-list li{margin:8px 0}
+    .nav-list a{
+        display:block;padding:8px 10px;border-radius:6px;text-decoration:none;color:#1f2937;
+        font-weight:600;font-size:0.95rem;
+    }
+    .nav-list a:hover{background:#eef6ff;color:var(--primary)}
+    .nav-list a.active{background:linear-gradient(90deg,var(--primary),#0056d6);color:white}
+
+    /* Botón hamburguesa móvil */
+    .hambtn{
+        display:none;background:transparent;border:0;cursor:pointer;font-size:1.1rem;padding:6px;border-radius:6px
+    }
+    @media (max-width:900px){
+        .hambtn{display:inline-flex;align-items:center}
+        nav.side{position:relative;margin-bottom:12px}
+        .nav-list{display:none}
+        .nav-list.show{display:block}
+    }
+
+    /* Contenido principal */
+    main.container {
+        padding: 0;
+    }
+
+    section {
+        background-color: var(--card);
+        margin: 20px 0;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(15,23,42,0.04);
+    }
+
+    h2 {color: var(--primary);border-bottom:2px solid #e9ecef;padding-bottom:10px;margin-top:0}
+    h3 {color: var(--accent);margin-top:18px}
+
+    pre {
+        background-color: #272822; /* Fondo oscuro tipo editor de código */
+        color: #f8f8f2;
+        padding: 15px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-family: 'Consolas', 'Courier New', monospace;
+        font-size: 0.9em;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .keyword {color: var(--primary);font-weight:700}
+    .java-keyword {color:#f92672;font-weight:700}
+
+    footer {text-align:center;padding:18px 0;color:var(--muted);font-size:0.9em}
+
+    .bibliography{background:#f1f5f9;padding:18px;border-radius:8px}
+
+    /* Mejora de accesibilidad de foco en enlaces */
+    a:focus{outline:3px solid rgba(0,123,255,0.18);outline-offset:3px}
+
+  </style>
+</head>
+<body>
+<header>
+  <h1>Unidad 6 - Flujos y archivos</h1>
+  <p>Programación Orientada a Objetos — conceptos, ejemplos prácticos en Java y buenas prácticas</p>
+</header>
+
+<div class="layout">
+  <nav class="side" aria-label="Navegación de la unidad">
+    <div class="nav-header">
+      <div class="nav-title">Contenido</div>
+      <button class="hambtn" id="hambtn">☰</button>
+    </div>
+    <ul class="nav-list" id="navList">
+      <li><a href="#introduccion" class="active">Introducción</a></li>
+      <li><a href="#definicion">6.1 Definición</a></li>
+      <li><a href="#clasificacion">6.2 Clasificación</a></li>
+      <li><a href="#operaciones">6.3 Operaciones y accesos</a></li>
+      <li><a href="#persistencia">6.4 Objetos persistentes</a></li>
+      <li><a href="#ejemplos">Ejemplos en Java</a></li>
+      <li><a href="#conclusion">Conclusión</a></li>
+      <li><a href="#bibliografia">Bibliografía</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+
+    <section id="introduccion">
+      <h2>Introducción</h2>
+      <p>Los flujos (streams) y los archivos son la base para la persistencia de datos en las aplicaciones: permiten leer y escribir información desde/hacia dispositivos (archivos en disco, red, memoria). En Java hay dos grandes familias para tratar datos: flujos de bytes (para datos binarios) y flujos de caracteres (para texto).</p>
+    </section>
+
+    <section id="definicion">
+      <h2>6.1 Definición</h2>
+      <p><strong>Flujo (stream)</strong>: secuencia de datos que se lee o escribe de forma ordenada. En Java, los flujos abstraen la fuente o destino (archivo, memoria, red), y se dividen fundamentalmente en:</p>
+      <ul>
+      <li><strong>Streams de bytes</strong> (InputStream / OutputStream) — trabajan con bytes crudos (útiles para archivos binarios: imágenes, audio).</li>
+      <li><strong>Streams de caracteres</strong> (Reader / Writer) — trabajan con char y son apropiados para texto (respetando codificación/charset).</li>
+      </ul>
+    <p>La ventaja de usar flujos: independencia de la fuente/destino + composición (buffers, filtros, objetos que convierten datos).</p>
+    </section>
+    
+    <section id="clasificacion">
+      <h2>6.2 Clasificación: Archivos de texto y binarios</h2>
+      <h3>Archivos de texto</h3>
+      <p>Contienen caracteres legibles (UTF-8, ISO-8859-1...).</p>
+    <ul>
+    <li>Ventajas: legibilidad humana y facilidad de depuración.</li>
+    <li>Desventajas: mayor tamaño y menos eficiente para datos numéricos.</li>
+    </ul>
+
+      <h3>Archivos binarios</h3>
+      <p>Contienen bytes que representan datos no necesariamente legibles. Se usan para números, imágenes y objetos serializados.</p> 
+    <ul>
+    <li>Ventajas: eficiencia y menor tamaño.</li>
+    <li>Desventajas: menos portables sin un formato estandarizado.</li>
+    </ul>
+
+    <h3>Comparación rápida:</h3>
+    <ul>
+    <li>Texto: fácil inspección humana; mejor para interoperabilidad.</li>
+    <li>Binario: más compacto, puede incluir estructuras complejas (floats, ints, objetos serializados), pero menos legible.</li>
+    </ul>
+
+      <p>Ejemplo conceptual: una lista de avisos (texto) vs. un fichero con enteros en formato binario.</p>
+    </section>
+
+    <section id="operaciones">
+      <h2>6.3 Operaciones básicas y tipos de acceso</h2>
+      <p>Operaciones CRUD: crear, abrir, leer, escribir, añadir, actualizar, borrar, mover/renombrar y cerrar. Tipos de acceso:</p>
+      <ul>
+        <li><strong>Secuencial</strong>: leer/escribir de inicio a fin (<code>BufferedReader</code>, <code>DataInputStream</code>).</li>
+        <li><strong>Aleatorio</strong>: saltar a posiciones ( <code>RandomAccessFile</code>, <code>FileChannel</code> ).</li>
+      </ul>
+
+      <h3>Buenas prácticas</h3>
+      <ul>
+        <li>Usar buffering para eficiencia.</li>
+        <li>Usar <code>try-with-resources</code> para cerrar streams automáticamente.</li>
+        <li>Especificar <code>Charset</code> (p. ej. <code>StandardCharsets.UTF_8</code>).</li>
+        <li>Evitar escrituras concurrentes sin protección (usar <code>FileChannel.lock()</code> si es necesario).</li>
+      </ul>
+    </section>
+
+    <section id="persistencia">
+      <h2>6.4 Manejo de objetos persistentes</h2>
+      <p>Formas de persistir objetos en Java:</p>
+      <ol>
+        <li><strong>Serialización Java</strong> (<code>Serializable</code>): fácil pero acoplada a Java y sensible a cambios de clase.</li>
+        <li><strong>JSON / XML</strong> (Gson, Jackson, JAXB): legible e interoperable.</li>
+        <li><strong>Bases de datos</strong>: para persistencia compleja y consultas.</li>
+      </ol>
+
+      <p>Puntos clave: use <code>serialVersionUID</code>, marque con <code>transient</code> campos que no deben persistir y considere alternativas como JSON para interoperabilidad.</p>
+    </section>
+
+    <section id="ejemplos">
+      <h2>Ejemplos prácticos en Java</h2>
+
+      <h3>Ejemplo 1 — Archivo de texto (crear, agregar, leer)</h3>
+      <pre>// AvisosApp.java
+import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
+import java.io.*;
+import java.util.*;
+
+public class AvisosApp {
+    private static final Path PATH = Paths.get("Avisos.txt");
+
+    // Graba un aviso al final del archivo (append)
+    public static void grabarAviso(String aviso) throws IOException {
+        try (BufferedWriter bw = Files.newBufferedWriter(PATH,
+                StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND)) {
+            bw.write(aviso);
+            bw.newLine();
+        }
+    }
+
+    // Lee todos los avisos (readAllLines conveniente para ficheros pequeños)
+    public static List<String> reporteAvisos() throws IOException {
+        if (Files.notExists(PATH)) return Collections.emptyList();
+        return Files.readAllLines(PATH, StandardCharsets.UTF_8);
+    }
+
+    public static void main(String[] args) {
+        try {
+            grabarAviso("Aviso 1: Entrega de práctica el viernes");
+            grabarAviso("Aviso 2: Lab el miércoles");
+            System.out.println("Avisos almacenados:");
+            for (String l : reporteAvisos()) System.out.println(" - " + l);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+      <h3>Ejemplo 2 — Archivo binario con números (escribir y leer)</h3>
+      <pre>// BinaryExample.java
+import java.io.*;
+
+public class BinaryExample {
+    public static void main(String[] args) {
+        int[] nums = {10, 20, 30, 40};
+
+        // Escribir enteros en binario
+        try (DataOutputStream dos = new DataOutputStream(
+                 new BufferedOutputStream(new FileOutputStream("numeros.bin")))) {
+            for (int n : nums) dos.writeInt(n);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Leer enteros en binario
+        try (DataInputStream dis = new DataInputStream(
+                 new BufferedInputStream(new FileInputStream("numeros.bin")))) {
+            while (true) {
+                int v = dis.readInt();
+                System.out.println("Leído: " + v);
+            }
+        } catch (EOFException eof) {
+            System.out.println("Fin de archivo alcanzado.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+      <h3>Ejemplo 3 — Acceso aleatorio con RandomAccessFile</h3>
+      <pre>// RandomAccessExample.java
+import java.io.*;
+
+public class RandomAccessExample {
+    public static void main(String[] args) {
+        String file = "random.dat";
+
+        try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+            // Escribir 5 enteros
+            for (int i = 1; i <= 5; i++) raf.writeInt(i * 10);
+
+            // Modificar el 3er entero (índice 2): cada int ocupa 4 bytes
+            long pos = 2L * Integer.BYTES; // 2 * 4 = 8
+            raf.seek(pos);
+            raf.writeInt(999);
+
+            // Volver al inicio y leer todos
+            raf.seek(0);
+            for (int i = 0; i < 5; i++) {
+                System.out.println("Valor[" + i + "] = " + raf.readInt());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+      <h3>Ejemplo 4 — Serialización de objetos (persistencia simple)</h3>
+      <pre>// Estudiante.java
+import java.io.Serializable;
+
+public class Estudiante implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private int id;
+    private String nombre;
+    private double promedio;
+    // campo que no queremos persistir
+    private transient String contraseña;
+
+    public Estudiante(int id, String nombre, double promedio) {
+        this.id = id;
+        this.nombre = nombre;
+        this.promedio = promedio;
+    }
+
+    @Override
+    public String toString() {
+        return id + " - " + nombre + " - " + promedio + " - contraseña=" + contraseña;
+    }
+}
+
+// PersistEstudiantes.java
+import java.io.*;
+import java.util.*;
+
+public class PersistEstudiantes {
+    public static void main(String[] args) {
+        List<Estudiante> lista = Arrays.asList(
+            new Estudiante(1, "Ana", 8.5),
+            new Estudiante(2, "Luis", 9.1)
+        );
+
+        // Guardar la lista de estudiantes
+        try (ObjectOutputStream oos = new ObjectOutputStream(
+                 new FileOutputStream("estudiantes.dat"))) {
+            oos.writeObject(lista);
+            System.out.println("Lista serializada correctamente.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Recuperar la lista
+        try (ObjectInputStream ois = new ObjectInputStream(
+                 new FileInputStream("estudiantes.dat"))) {
+            @SuppressWarnings("unchecked")
+            List<Estudiante> leidos = (List<Estudiante>) ois.readObject();
+            leidos.forEach(System.out::println);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+      <h3>Buenas prácticas y recomendaciones</h3>
+      <ul>
+        <li>Usa try-with-resources para cerrar automáticamente streams.</li>
+        <li>Prefiere NIO (Path, Files) para operaciones de archivos modernas.</li>
+        <li>Siempre especifica charset (ej. StandardCharsets.UTF_8) al leer/escribir texto.</li>
+        <li>Buffering: usa buffers para rendimiento (BufferedInputStream, BufferedWriter).</li>
+        <li>Bloqueos (FileLock) para acceso concurrente si múltiples procesos/threads escriben el mismo archivo.</li>
+        <li>Atomicidad: para operaciones críticas, escribe a un archivo temporal y luego mueve/renombra (Files.move con REPLACE_EXISTING).</li>
+        <li>Validación de entrada: evita path traversal (../) si recibes rutas desde usuarios.</li>
+        <li>No deserializar datos no confiables con ObjectInputStream sin validación.</li>
+      </ul>
+    </section>
+
+    <section id="conclusion">
+      <h2>Conclusión</h2>
+      <p>Los flujos y archivos son fundamentales para la persistencia en Java. Conocer cuándo usar texto o binario, el tipo de acceso adecuado y las herramientas de la plataforma permite diseñar sistemas robustos y eficientes. Para proyectos reales, considere JSON o bases de datos en lugar de la serialización nativa si necesita interoperabilidad y mantenimiento a largo plazo.</p>
+    </section>
+
+    <section id="bibliografia">
+      <h2>Bibliografía</h2>
+      <div class="bibliography">
+        <ul>
+          <li>Oracle, <em>The Java™ Tutorials</em> — Trail: Essential I/O (documentación oficial de Java).</li>
+          <li>API Java SE — Paquetes <code>java.io</code>, <code>java.nio.file</code>, <code>java.nio.channels</code>.</li>
+          <li>Joshua Bloch — <em>Effective Java</em>.</li>
+          <li>Herbert Schildt — <em>Java: The Complete Reference</em>.</li>
+          <li>Bruce Eckel — <em>Thinking in Java</em>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      Unidad 6 — Flujos y archivos · Programación Orientada a Objetos · Material generado por ChatGPT
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  // Navegación: resaltar enlace activo y control hamburguesa
+  const navList = document.getElementById('navList');
+  const links = navList.querySelectorAll('a');
+  links.forEach(a => a.addEventListener('click', (e) => {
+    links.forEach(x => x.classList.remove('active'));
+    e.currentTarget.classList.add('active');
+    if(window.innerWidth <= 900) navList.classList.remove('show');
+  }));
+
+  document.getElementById('hambtn').addEventListener('click', () => {
+    navList.classList.toggle('show');
+  });
+
+  // Marcar el enlace activo según el scroll
+  const sections = document.querySelectorAll('main.container section');
+  window.addEventListener('scroll', () => {
+    let fromTop = window.scrollY + 80;
+    sections.forEach(sec => {
+      const id = sec.id;
+      const link = document.querySelector(`nav.side a[href="#${id}"]`);
+      if(!link) return;
+      if(sec.offsetTop <= fromTop && sec.offsetTop + sec.offsetHeight > fromTop) {
+        links.forEach(x => x.classList.remove('active'));
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
